@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@tsxp/core": "*",
+    "cors": "^2.8.5",
     "dayjs": "^1.11.2",
     "dotenv": "^16.0.1",
     "jsonwebtoken": "^8.5.1",
@@ -35,6 +36,7 @@
     "node-xlsx": "^0.21.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.12",
     "@types/express": "^4.17.12",
     "@types/jest": "^26.0.24",
     "@types/jsonwebtoken": "^8.5.8",
