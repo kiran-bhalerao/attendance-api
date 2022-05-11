@@ -1,23 +1,13 @@
-import { Controller, Middlewares, Post } from '@tsxp/core'
+import { Controller, Get, Middlewares, Post } from '@tsxp/core'
+import dayjs from 'dayjs'
 import { Request, Response } from 'express'
 import fs from 'fs'
 import multer from 'multer'
 import xlsx from 'node-xlsx'
-import {
-  durations,
-  emptyRow,
-  inTime1,
-  inTime2,
-  inTime3,
-  nullTime,
-  outTime1,
-  outTime2,
-  outTime3,
-  overviewRow,
-  staticRows
-} from 'src/constants'
+import { durations, inTime1, inTime2, inTime3, nullTime, outTime1, outTime2, outTime3 } from 'src/constants'
 import { AdminOnly } from 'src/helpers/auth'
 import { random } from 'src/helpers/functions/random'
+import { Attendance } from 'src/models/attendance'
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -42,72 +32,89 @@ export class Admin {
     const rows = workSheetsFromFile[1].data as any[]
     const data = rows.slice(2)
 
-    const d = data
-      .map((row) => {
-        const srNo = row[0]
-        const empName = row[1]
-        const shift = row[2]
-        const totalPresent = row[row.length - 1]
+    const month = rows[0].filter(Boolean)[2]
+    const days: any[] = rows[1].slice(3)
 
-        const statuses = row.slice(3, -1)
-        const totalAbsent = statuses.length - totalPresent
+    const fromDate = dayjs(days[0] + ' ' + month.replace('-', ' ')).format('YYYY-MM-DD')
+    const toDate = dayjs(days[days.length - 1] + ' ' + month.replace('-', ' ')).format('YYYY-MM-DD')
 
-        const overviewData: any[] = [...overviewRow]
+    const att = data.map((row) => {
+      const employeeName = row[1]
+      const shift = row[2]
+      let totalPresentDays = 0
+      let totalAbsentDays = 0
 
-        overviewData[2] = empName
-        overviewData[16] = totalPresent
-        overviewData[17] = totalAbsent
-        overviewData[23] = shift
-        overviewData[32] = srNo
+      const statuses = row.slice(3)
 
-        const sheetData: any[] = []
+      const attendance = days.map((day, i) => {
+        const date = dayjs(day + ' ' + month.replace('-', ' ')).format('YYYY-MM-DD')
+        const status = statuses[i]
 
-        for (const status of statuses) {
-          sheetData[0] = [...(sheetData[0] || ['Status']), status]
+        let inTime = null
+        let outTime = null
+        let duration = null
 
-          if (status === 'A') {
-            sheetData[1] = [...(sheetData[1] || ['InTime']), nullTime]
-            sheetData[2] = [...(sheetData[2] || ['OutTime']), nullTime]
-            sheetData[3] = [...(sheetData[3] || ['Duration']), nullTime]
+        if (status === 'A') {
+          inTime = nullTime
+          outTime = nullTime
+          duration = nullTime
+          totalAbsentDays = totalAbsentDays + 1
+        } else {
+          if (shift === 1) {
+            inTime = random(inTime1)
+            outTime = random(outTime1)
+          } else if (shift === 2) {
+            inTime = random(inTime2)
+            outTime = random(outTime2)
           } else {
-            if (shift === 1) {
-              sheetData[1] = [...(sheetData[1] || ['InTime']), random(inTime1)]
-              sheetData[2] = [...(sheetData[2] || ['OutTime']), random(outTime1)]
-            } else if (shift === 2) {
-              sheetData[1] = [...(sheetData[1] || ['InTime']), random(inTime2)]
-              sheetData[2] = [...(sheetData[2] || ['OutTime']), random(outTime2)]
-            } else {
-              sheetData[1] = [...(sheetData[1] || ['InTime']), random(inTime3)]
-              sheetData[2] = [...(sheetData[2] || ['OutTime']), random(outTime3)]
-            }
-
-            sheetData[3] = [...(sheetData[3] || ['Duration']), random(durations)]
+            inTime = random(inTime3)
+            outTime = random(outTime3)
           }
 
-          sheetData[4] = [...(sheetData[4] || ['Late By']), nullTime]
-          sheetData[5] = [...(sheetData[5] || ['Early By']), nullTime]
-          sheetData[6] = [...(sheetData[6] || ['OT']), nullTime]
-          sheetData[7] = [...(sheetData[7] || ['Shift']), shift]
+          duration = random(durations)
+          totalPresentDays = totalPresentDays + 1
         }
 
-        return [overviewData, emptyRow, emptyRow, ...sheetData, emptyRow]
+        return {
+          date,
+          status,
+          inTime,
+          outTime,
+          duration
+        }
       })
-      .flat()
 
-    const rawSheet = [...staticRows, ...d]
-
-    const buffer = xlsx.build([{ name: 'output', data: rawSheet, options: {} }])
-
-    const fileName = './_downloads/Output -' + Date.now() + '.xlsx'
-
-    fs.writeFile(fileName, buffer, (err) => {
-      if (err) console.log(err)
+      return {
+        fromDate,
+        toDate,
+        employeeName,
+        shift,
+        totalPresentDays,
+        totalAbsentDays,
+        attendance
+      }
     })
 
-    // TODO:
-    // send this output file to client and delete it
-    // delete input file as well
+    // delete input file
+    const filePath = req.file?.path
+    if (filePath && fs.existsSync(filePath)) {
+      try {
+        fs.unlinkSync(filePath)
+      } catch (err) {
+        console.error(err)
+      }
+    }
 
-    return res.send({ message: 'File Generated successfully' })
+    await Attendance.insertMany(att)
+
+    return res.send({ message: 'File uploaded successfully' })
+  }
+
+  @Get('/attendances')
+  @AdminOnly({ error: 'This is admin only route' })
+  async getAttendances(_req: Request, res: Response) {
+    const attendances = await Attendance.find({})
+
+    res.send({ data: attendances })
   }
 }

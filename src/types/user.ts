@@ -1,5 +1,6 @@
-export type User = {
+export interface USER {
+  name?: string
   email: string
-  password?: string
+  password: string
   userType: 'ADMIN' | 'USER'
 }

@@ -1,16 +1,16 @@
 import jwt from 'jsonwebtoken'
-import { User } from 'src/types/user'
+import { USER } from 'src/types/user'
 
 const secretKey = 'jwt-super-secret'
 
 export const parse = (token: string) => {
   try {
-    return jwt.verify(token, secretKey) as Omit<User, 'password'>
+    return jwt.verify(token, secretKey) as Omit<Omit<USER, 'password'>, 'name'>
   } catch {
     return undefined
   }
 }
 
-export const sign = (user: Omit<User, 'password'>) => {
+export const sign = (user: Omit<Omit<USER, 'password'>, 'name'>) => {
   return jwt.sign(user, secretKey)
 }
