@@ -29,7 +29,7 @@ export class Admin {
   @AdminOnly({ error: 'This is admin only route' })
   async uploadExcel(req: Request, res: Response) {
     const workSheetsFromFile = xlsx.parse(req.file?.path)
-    const rows = workSheetsFromFile[1].data as any[]
+    const rows = workSheetsFromFile[0].data as any[]
     const data = rows.slice(2)
 
     const month = rows[0].filter(Boolean)[2]
