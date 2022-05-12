@@ -1,4 +1,4 @@
-import { Controller, CustomError, Post } from '@tsxp/core'
+import { Auth, Controller, CustomError, Get, Post } from '@tsxp/core'
 import { Request, Response } from 'express'
 import { sign } from 'src/helpers/jwt'
 import { comparePassword } from 'src/helpers/password'
@@ -6,13 +6,13 @@ import { User } from 'src/models/user'
 import { USER } from 'src/types/user'
 
 @Controller('/auth')
-export class Auth {
+export class Authentication {
   @Post('/register')
   async register(
     req: Request<unknown, unknown, { email: string; password: string; userType: USER['userType'] }>,
     res: Response
   ) {
-    const { email, password, userType } = req.body
+    const { email, password, userType = 'USER' } = req.body
 
     await User.build({ email, password, userType }).save()
 
@@ -20,7 +20,9 @@ export class Auth {
 
     res.send({
       data: {
-        token
+        token,
+        email,
+        userType
       }
     })
   }
@@ -36,11 +38,21 @@ export class Auth {
 
       return res.send({
         data: {
-          token
+          token,
+          email,
+          userType
         }
       })
     }
 
     throw new CustomError('Invalid Credentials')
+  }
+
+  @Get('/user')
+  @Auth()
+  async user(req: Request, res: Response) {
+    const user = req.user
+
+    res.send({ user })
   }
 }

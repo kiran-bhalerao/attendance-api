@@ -2,13 +2,13 @@ import { App } from '@tsxp/core'
 import cors from 'cors'
 import { json, urlencoded } from 'express'
 import { Admin } from 'src/controllers/admin'
-import { Auth } from 'src/controllers/auth'
+import { Authentication } from 'src/controllers/auth'
 import { parse } from 'src/helpers/jwt'
 
 export const { app, listen } = new App({
   prefix: '/api',
   middlewares: [json(), urlencoded({ extended: true }), cors()],
-  controllers: [Auth, Admin],
+  controllers: [Authentication, Admin],
   async context(req) {
     const jwtToken = req.headers['authorization'] as string
     const user = parse(jwtToken)
