@@ -1,4 +1,4 @@
-import { Controller, Get, Middlewares, Post } from '@tsxp/core'
+import { Auth, Controller, Get, Middlewares, Post } from '@tsxp/core'
 import dayjs from 'dayjs'
 import { Request, Response } from 'express'
 import fs from 'fs'
@@ -111,7 +111,7 @@ export class Admin {
   }
 
   @Get('/attendances')
-  @AdminOnly({ error: 'This is admin only route' })
+  @Auth()
   async getAttendances(_req: Request, res: Response) {
     const attendances = await Attendance.find({})
 
