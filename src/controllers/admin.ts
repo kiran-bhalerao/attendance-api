@@ -1,4 +1,4 @@
-import { Auth, Controller, Get, Middlewares, Post } from '@tsxp/core'
+import { Controller, Middlewares, Post } from '@tsxp/core'
 import dayjs from 'dayjs'
 import { Request, Response } from 'express'
 import fs from 'fs'
@@ -23,7 +23,7 @@ const upload = multer({
 })
 
 @Controller('admin')
-export class Admin {
+export class AdminController {
   @Post('/upload')
   @Middlewares(upload.single('excel-file'))
   @AdminOnly({ error: 'This is admin only route' })
@@ -32,11 +32,12 @@ export class Admin {
     const rows = workSheetsFromFile[0].data as any[]
     const data = rows.slice(2)
 
-    const month = rows[0].filter(Boolean)[2]
+    const _month = rows[0].filter(Boolean)[2]
     const days: any[] = rows[1].slice(3)
 
-    const fromDate = dayjs(days[0] + ' ' + month.replace('-', ' ')).format('YYYY-MM-DD')
-    const toDate = dayjs(days[days.length - 1] + ' ' + month.replace('-', ' ')).format('YYYY-MM-DD')
+    const _fromDate = days[0] + ' ' + _month.replace('-', ' ')
+    const month = dayjs(_fromDate).format('MMMM')
+    const year = dayjs(_fromDate).format('YYYY')
 
     const att = data.map((row) => {
       const employeeName = row[1]
@@ -47,7 +48,7 @@ export class Admin {
       const statuses = row.slice(3)
 
       const attendance = days.map((day, i) => {
-        const date = dayjs(day + ' ' + month.replace('-', ' ')).format('YYYY-MM-DD')
+        const date = dayjs(day + ' ' + _month.replace('-', ' ')).format('YYYY-MM-DD')
         const status = statuses[i]
 
         let inTime = null
@@ -85,8 +86,8 @@ export class Admin {
       })
 
       return {
-        fromDate,
-        toDate,
+        month,
+        year,
         employeeName,
         shift,
         totalPresentDays,
@@ -108,13 +109,5 @@ export class Admin {
     await Attendance.insertMany(att)
 
     return res.send({ message: 'File uploaded successfully' })
-  }
-
-  @Get('/attendances')
-  @Auth()
-  async getAttendances(_req: Request, res: Response) {
-    const attendances = await Attendance.find({})
-
-    res.send({ data: attendances })
   }
 }

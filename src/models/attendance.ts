@@ -1,8 +1,8 @@
 import { Document, model, Model, Schema } from 'mongoose'
 
 interface AttendanceAttrs {
-  fromDate: Date
-  toDate: Date
+  month: string
+  year: number
   employeeName: string
   shift: 1 | 2 | 3
   totalPresentDays: number
@@ -20,8 +20,8 @@ export interface AttendanceDoc extends Document, AttendanceAttrs {}
 
 const AttendanceSchema = new Schema(
   {
-    fromDate: Date,
-    toDate: Date,
+    month: String,
+    year: Number,
     employeeName: String,
     shift: {
       type: Number,
@@ -54,5 +54,5 @@ const AttendanceSchema = new Schema(
   }
 )
 
-AttendanceSchema.index({ fromDate: 1, toDate: 1, employeeName: 1, shift: 1 }, { unique: true })
+AttendanceSchema.index({ month: 1, year: 1, employeeName: 1, shift: 1 }, { unique: true })
 export const Attendance = model<AttendanceDoc, Model<AttendanceDoc>>('Attendance', AttendanceSchema)
