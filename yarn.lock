@@ -582,15 +582,16 @@
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
 "@tsxp/core@*":
-  version "0.0.17"
-  resolved "https://registry.yarnpkg.com/@tsxp/core/-/core-0.0.17.tgz#0ee877b5054721bdc475ca9a99d29e0034a2aceb"
-  integrity sha512-063vWrvckTM0OOJSMwBNPP54BGqNZcB6livkFqzRXqVf1hR8NFirFTpv9syCN7HcZPDXWngx2T5XLsCkhyN8jw==
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/@tsxp/core/-/core-0.0.19.tgz#04b01047b1cdec528e22d1f5ac409c5d84b5d3b5"
+  integrity sha512-klXP1TbMqRZjf2wgomuEp/Cnp75NX7XfZ4kdt4m+vDWIx0GdsudF660+dy/GWyoMngDh+FZARNpPluyCi8FyXg==
   dependencies:
-    "@types/express" "^4.17.12"
-    express "^4.17.1"
+    "@types/express" "^4.17.13"
+    clean-stacktrace "^1.1.0"
+    express "^4.18.1"
     express-async-errors "^3.1.1"
     reflect-metadata "^0.1.13"
-    typescript "^4.3.5"
+    typescript "^4.6.4"
 
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.19"
@@ -659,7 +660,7 @@
     "@types/qs" "*"
     "@types/range-parser" "*"
 
-"@types/express@*", "@types/express@^4.17.12":
+"@types/express@*", "@types/express@^4.17.12", "@types/express@^4.17.13":
   version "4.17.13"
   resolved "https://registry.yarnpkg.com/@types/express/-/express-4.17.13.tgz#a76e2995728999bab51a33fabce1d705a3709034"
   integrity sha512-6bSZTPaTIACxn48l50SR+axgrqm6qXFIxrdAKaG6PaJk3+zuUr35hBlgT7vOmJcum+OEaIBLtHV/qloEAFITeA==
@@ -1439,6 +1440,13 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
+clean-stacktrace@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/clean-stacktrace/-/clean-stacktrace-1.1.0.tgz#8b8cdc87f640daaba9c595ab6edb897b63b0ce33"
+  integrity sha1-i4zch/ZA2qupxZWrbtuJe2OwzjM=
+  dependencies:
+    stack-utils-node-internals "^1.0.1"
+
 cliui@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/cliui/-/cliui-6.0.0.tgz#511d702c0c4e41ca156d7d0e96021f23e13225b1"
@@ -2081,7 +2089,7 @@ express-async-errors@^3.1.1:
   resolved "https://registry.yarnpkg.com/express-async-errors/-/express-async-errors-3.1.1.tgz#6053236d61d21ddef4892d6bd1d736889fc9da41"
   integrity sha512-h6aK1da4tpqWSbyCa3FxB/V6Ehd4EEB15zyQq9qe75OZBp0krinNKuH4rAY+S/U/2I36vdLAUFSjQJ+TFmODng==
 
-express@^4.17.1:
+express@^4.18.1:
   version "4.18.1"
   resolved "https://registry.yarnpkg.com/express/-/express-4.18.1.tgz#7797de8b9c72c857b9cd0e14a5eea80666267caf"
   integrity sha512-zZBcOX9TfehHQhtupq57OF8lFZ3UZi08Y97dwFCkD8p9d/d2Y3M+ykKcwaMDEL+4qyUolgBDX6AblpR3fL212Q==
@@ -4592,6 +4600,11 @@ ssf@~0.11.2:
   dependencies:
     frac "~1.1.2"
 
+stack-utils-node-internals@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/stack-utils-node-internals/-/stack-utils-node-internals-1.0.1.tgz#ab4a8a469b6cbec72b0bfb589df5e28b1d12281f"
+  integrity sha1-q0qKRptsvscrC/tYnfXiix0SKB8=
+
 stack-utils@^2.0.2:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/stack-utils/-/stack-utils-2.0.5.tgz#d25265fca995154659dbbfba3b49254778d2fdd5"
@@ -5002,7 +5015,7 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^4.3.5, typescript@^4.4.4:
+typescript@^4.4.4, typescript@^4.6.4:
   version "4.6.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.4.tgz#caa78bbc3a59e6a5c510d35703f6a09877ce45e9"
   integrity sha512-9ia/jWHIEbo49HfjrLGfKbZSuWo9iTMwXO+Ca3pRsSpbsMbc7/IU8NKdCZVRRBafVPGnoJeFL76ZOAA84I9fEg==

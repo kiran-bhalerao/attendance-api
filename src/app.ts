@@ -10,6 +10,11 @@ export const { app, listen } = new App({
   prefix: '/api',
   middlewares: [json(), urlencoded({ extended: true }), cors()],
   controllers: [Authentication, AdminController, AttendanceController],
+  errorHandler: {
+    onError(err) {
+      console.log(err.message)
+    }
+  },
   async context(req) {
     const jwtToken = req.headers['authorization'] as string
     const user = parse(jwtToken)
