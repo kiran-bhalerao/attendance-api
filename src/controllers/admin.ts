@@ -33,7 +33,7 @@ export class AdminController {
     const data = rows.slice(2)
 
     const _month = rows[0].filter(Boolean)[2]
-    const days: any[] = rows[1].slice(3)
+    const days: any[] = rows[1].slice(4)
 
     const _fromDate = days[0] + ' ' + _month.replace('-', ' ')
     const month = dayjs(_fromDate).format('MMMM')
@@ -41,11 +41,12 @@ export class AdminController {
 
     const att = data.map((row) => {
       const employeeName = row[1]
-      const shift = row[2]
+      const department = row[2]
+      const shift = row[3]
       let totalPresentDays = 0
       let totalAbsentDays = 0
 
-      const statuses = row.slice(3)
+      const statuses = row.slice(4)
 
       const attendance = days.map((day, i) => {
         const date = dayjs(day + ' ' + _month.replace('-', ' ')).format('YYYY-MM-DD')
@@ -89,6 +90,7 @@ export class AdminController {
         month,
         year,
         employeeName,
+        department,
         shift,
         totalPresentDays,
         totalAbsentDays,

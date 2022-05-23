@@ -4,6 +4,7 @@ interface AttendanceAttrs {
   month: string
   year: number
   employeeName: string
+  department: string
   shift: 1 | 2 | 3
   totalPresentDays: number
   totalAbsentDays: number
@@ -23,6 +24,7 @@ const AttendanceSchema = new Schema(
     month: String,
     year: Number,
     employeeName: String,
+    department: String,
     shift: {
       type: Number,
       enum: [1, 2, 3]
@@ -54,5 +56,5 @@ const AttendanceSchema = new Schema(
   }
 )
 
-AttendanceSchema.index({ month: 1, year: 1, employeeName: 1, shift: 1 }, { unique: true })
+AttendanceSchema.index({ month: 1, year: 1, employeeName: 1, department: 1, shift: 1 }, { unique: true })
 export const Attendance = model<AttendanceDoc, Model<AttendanceDoc>>('Attendance', AttendanceSchema)

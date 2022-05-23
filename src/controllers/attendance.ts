@@ -9,20 +9,22 @@ export class AttendanceController {
   async getFilterData(_req: Request, res: Response) {
     const months = await Attendance.find().distinct('month')
     const years = await Attendance.find().distinct('year')
+    const departments = await Attendance.find().distinct('department')
 
-    res.send({ months, years })
+    res.send({ months, years, departments })
   }
 
   @Get('/all')
   @Auth()
   async getAttendances(req: Request, res: Response) {
-    const { employeeKeyword, month, year } = req.query
+    const { employeeKeyword, month, year, department } = req.query
 
     const attendances = await Attendance.find({
       ...(employeeKeyword ? { employeeName: { $regex: employeeKeyword, $options: 'i' } } : {}),
       ...(month ? { month } : {}),
-      ...(year ? { year } : {})
-    })
+      ...(year ? { year } : {}),
+      ...(department ? { department } : {})
+    }).limit(20)
 
     res.send({ data: attendances })
   }
