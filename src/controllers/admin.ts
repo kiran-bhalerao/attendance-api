@@ -28,75 +28,7 @@ export class AdminController {
   @Middlewares(upload.single('excel-file'))
   @AdminOnly({ error: 'This is admin only route' })
   async uploadExcel(req: Request, res: Response) {
-    const workSheetsFromFile = xlsx.parse(req.file?.path)
-    const rows = workSheetsFromFile[0].data as any[]
-    const data = rows.slice(2)
-
-    const _month = rows[0].filter(Boolean)[2]
-    const days: any[] = rows[1].slice(4)
-
-    const _fromDate = days[0] + ' ' + _month.replace('-', ' ')
-    const month = dayjs(_fromDate).format('MMMM')
-    const year = dayjs(_fromDate).format('YYYY')
-
-    const att = data.map((row) => {
-      const employeeName = row[1]
-      const department = row[2]
-      const shift = row[3]
-      let totalPresentDays = 0
-      let totalAbsentDays = 0
-
-      const statuses = row.slice(4)
-
-      const attendance = days.map((day, i) => {
-        const date = dayjs(day + ' ' + _month.replace('-', ' ')).format('YYYY-MM-DD')
-        const status = statuses[i]
-
-        let inTime = null
-        let outTime = null
-        let duration = null
-
-        if (status === 'A') {
-          inTime = nullTime
-          outTime = nullTime
-          duration = nullTime
-          totalAbsentDays = totalAbsentDays + 1
-        } else {
-          if (shift === 1) {
-            inTime = random(inTime1)
-            outTime = random(outTime1)
-          } else if (shift === 2) {
-            inTime = random(inTime2)
-            outTime = random(outTime2)
-          } else {
-            inTime = random(inTime3)
-            outTime = random(outTime3)
-          }
-
-          duration = random(durations)
-          totalPresentDays = totalPresentDays + 1
-        }
-
-        return {
-          date,
-          status,
-          inTime,
-          outTime,
-          duration
-        }
-      })
-
-      return {
-        month,
-        year,
-        employeeName,
-        department,
-        shift,
-        totalPresentDays,
-        totalAbsentDays,
-        attendance
-      }
-    })
+    const workSheetsFromFile = xlsx.parse(req.file?.path, { blankrows: false })
 
     // delete input file
     const filePath = req.file?.path
@@ -107,6 +39,84 @@ export class AdminController {
         console.error(err)
       }
     }
+
+    const rows = workSheetsFromFile[0].data as any[]
+    const data = rows.slice(2)
+
+    const _month = rows[0].filter(Boolean)[2]
+    const days: any[] = rows[1].slice(5)
+
+    const _fromDate = days[0] + ' ' + _month.replace('-', ' ').replace('.', '')
+    const month = dayjs(_fromDate).format('MMMM')
+    const year = dayjs(_fromDate).format('YYYY')
+
+    const att = data
+      .map((row) => {
+        const employeeName = row[1]
+
+        // check employeeName should not be "empty" or "number"
+        if (!employeeName || !isNaN(Number(employeeName))) {
+          return null
+        }
+
+        const department = row[3]
+        const shift = row[4]
+
+        let totalPresentDays = 0
+        let totalAbsentDays = 0
+
+        const statuses = row.slice(5)
+
+        const attendance = days.map((day, i) => {
+          const date = dayjs(day + ' ' + _month.replace('-', ' ')).format('YYYY-MM-DD')
+          const status = statuses[i]
+
+          let inTime = null
+          let outTime = null
+          let duration = null
+
+          if (status === 'A') {
+            inTime = nullTime
+            outTime = nullTime
+            duration = nullTime
+            totalAbsentDays = totalAbsentDays + 1
+          } else {
+            if (shift === 1) {
+              inTime = random(inTime1)
+              outTime = random(outTime1)
+            } else if (shift === 2) {
+              inTime = random(inTime2)
+              outTime = random(outTime2)
+            } else {
+              inTime = random(inTime3)
+              outTime = random(outTime3)
+            }
+
+            duration = random(durations)
+            totalPresentDays = totalPresentDays + 1
+          }
+
+          return {
+            date,
+            status,
+            inTime,
+            outTime,
+            duration
+          }
+        })
+
+        return {
+          month,
+          year,
+          employeeName,
+          department,
+          shift,
+          totalPresentDays,
+          totalAbsentDays,
+          attendance
+        }
+      })
+      .filter(Boolean)
 
     await Attendance.insertMany(att)
 
