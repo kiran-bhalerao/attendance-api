@@ -43,12 +43,12 @@ export class AdminController {
     const rows = workSheetsFromFile[0].data as any[]
     const data = rows.slice(2)
 
-    const _month = rows[0].filter(Boolean)[2]
+    const _month = rows[0].filter(Boolean)[2]?.replace(/[^a-zA-Z ]/g, '')
     const days: any[] = rows[1].slice(5)
 
-    const _fromDate = days[0] + ' ' + _month.replace('-', ' ').replace('.', '')
+    const _fromDate = days[0] + ' ' + _month
     const month = dayjs(_fromDate).format('MMMM')
-    const year = dayjs(_fromDate).format('YYYY')
+    const year = Number(dayjs(_fromDate).format('YYYY'))
 
     const att = data
       .map((row) => {
