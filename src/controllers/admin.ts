@@ -30,6 +30,8 @@ export class AdminController {
   async uploadExcel(req: Request, res: Response) {
     const workSheetsFromFile = xlsx.parse(req.file?.path, { blankrows: false })
 
+    const { month, year, department } = req.query
+
     // delete input file
     const filePath = req.file?.path
     if (filePath && fs.existsSync(filePath)) {
@@ -42,13 +44,7 @@ export class AdminController {
 
     const rows = workSheetsFromFile[0].data as any[]
     const data = rows.slice(2)
-
-    const _month = rows[0].filter(Boolean)[2]?.replace(/[^a-zA-Z ]/g, '')
     const days: any[] = rows[1].slice(5)
-
-    const _fromDate = days[0] + ' ' + _month
-    const month = dayjs(_fromDate).format('MMMM')
-    const year = Number(dayjs(_fromDate).format('YYYY'))
 
     const att = data
       .map((row) => {
@@ -59,7 +55,6 @@ export class AdminController {
           return null
         }
 
-        const department = row[3]
         const shift = row[4]
 
         let totalPresentDays = 0
@@ -68,7 +63,7 @@ export class AdminController {
         const statuses = row.slice(5)
 
         const attendance = days.map((day, i) => {
-          const date = dayjs(day + ' ' + _month.replace('-', ' ')).format('YYYY-MM-DD')
+          const date = dayjs(day + ' ' + month + ' ' + year).format('YYYY-MM-DD')
           const status = statuses[i]
 
           let inTime = null
