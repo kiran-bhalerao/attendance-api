@@ -24,7 +24,7 @@ export class AttendanceController {
       ...(month ? { month } : {}),
       ...(year ? { year } : {}),
       ...(department ? { department } : {})
-    }).limit(20)
+    }).limit(600)
 
     res.send({ data: attendances })
   }
