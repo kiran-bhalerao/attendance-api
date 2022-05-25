@@ -30,7 +30,8 @@ export class AdminController {
   async uploadExcel(req: Request, res: Response) {
     const workSheetsFromFile = xlsx.parse(req.file?.path, { blankrows: false })
 
-    const { month, year, department } = req.query
+    const { month, department } = req.query
+    const year = Number(req.query.year)
 
     // delete input file
     const filePath = req.file?.path
