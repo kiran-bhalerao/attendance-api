@@ -116,6 +116,6 @@ export class AdminController {
 
     await Attendance.insertMany(att)
 
-    return res.send({ message: 'File uploaded successfully', att })
+    return res.send({ message: 'File uploaded successfully' })
   }
 }
