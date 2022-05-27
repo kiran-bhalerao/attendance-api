@@ -17,15 +17,27 @@ export class AttendanceController {
   @Get('/all')
   @Auth()
   async getAttendances(req: Request, res: Response) {
-    const { employeeKeyword, month, year, department } = req.query
+    const { employeeKeyword, month, year, department, page } = req.query
+    const _page = Math.max(0, Number(page))
+    const pageLimit = 100
+
+    const lengthAtt = await Attendance.find({
+      ...(employeeKeyword ? { employeeName: { $regex: employeeKeyword, $options: 'i' } } : {}),
+      ...(month ? { month } : {}),
+      ...(year ? { year } : {}),
+      ...(department ? { department } : {})
+    }).countDocuments()
 
     const attendances = await Attendance.find({
       ...(employeeKeyword ? { employeeName: { $regex: employeeKeyword, $options: 'i' } } : {}),
       ...(month ? { month } : {}),
       ...(year ? { year } : {}),
       ...(department ? { department } : {})
-    }).limit(5600)
+    })
+    .limit(pageLimit)
+    .skip(pageLimit*_page)
 
-    res.send({ data: attendances })
+
+    res.send({ data: attendances, count: lengthAtt })
   }
 }
