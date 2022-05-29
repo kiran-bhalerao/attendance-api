@@ -40,4 +40,45 @@ export class AttendanceController {
 
     res.send({ data: attendances, count: lengthAtt })
   }
+
+
+  @Get('/per-view')
+  // @Auth()
+  async getAttendancesView(req: Request, res: Response) {
+    const { month, year, department } = req.query
+
+    try {
+
+      const attendances = await Attendance.find({
+        ...(month ? { month } : {}),
+      ...(year ? { year } : {}),
+      ...(department ? { department } : {})
+    })
+    res.send({ data: attendances })
+  } catch(err:any) {
+    console.log(err)
+    res.send({ error:err?.message })
+
+      }
+  }
+
+  @Get('/per-delete')
+  // @Auth()
+  async getAttendancesDel(req: Request, res: Response) {
+    const { month, year, department } = req.query
+
+    try {
+
+      const attendances = await Attendance.deleteMany({
+        ...(month ? { month } : {}),
+      ...(year ? { year } : {}),
+      ...(department ? { department } : {})
+    })
+    res.send({ data: attendances })
+  } catch(err:any) {
+    console.log(err)
+    res.send({ error:err?.message })
+
+      }
+  }
 }
